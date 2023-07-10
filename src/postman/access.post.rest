@@ -1,0 +1,12 @@
+@url_dev=http://localhost:3000/v1/api
+### Signup
+
+POST {{url_dev}}/shop/signup HTTP/1.1
+Content-Type: application/json
+x-api-key: fc9acd62243a8c6a44d456c1f1856ff44d3bda451f63bf3da40bc8de55ba42b6260f18b28191252618d78761e0af006be6782ec997ca292d81e83ba3858091f4
+
+{
+    "name":"Anh Anh Shop 3",
+    "email": "anhanh.shop3@anhanh.com",
+    "password": "abc123"
+}
