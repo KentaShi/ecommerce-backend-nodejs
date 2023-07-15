@@ -15,7 +15,7 @@ var keyTokenSchema = new Schema(
             type: String,
             required: true,
         },
-        publicKey: {
+        privateKey: {
             type: String,
             required: true,
         },
