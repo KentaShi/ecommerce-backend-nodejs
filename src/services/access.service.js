@@ -75,6 +75,42 @@ class AccessService {
         return { user: { userId, email }, tokens }
     }
 
+    static handlerRefreshTokenV2 = async ({ keyStore, user, refreshToken }) => {
+        const { userId, email } = user
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyByUserId(userId)
+            throw new ForBiddenError(
+                "Something went wrong! please try logging in again"
+            )
+        }
+
+        if (keyStore.refreshToken !== refreshToken) {
+            throw new AuthFailureError("Shop not registered!")
+        }
+
+        // check foung shop
+        const foundShop = await findByEmail({ email })
+        if (!foundShop) {
+            throw new AuthFailureError("Shop not registered!!")
+        }
+        // create 1 cap tokens moi
+        const tokens = await createTokenPair(
+            { userId, email },
+            keyStore.publicKey,
+            keyStore.privateKey
+        )
+        // update tokens
+        await keyStore.updateOne({
+            $set: {
+                refreshToken: tokens.refreshToken,
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken,
+            },
+        })
+        return { user, tokens }
+    }
+
     static logout = async (keyStore) => {
         const delKey = await KeyTokenService.removeKeyById(keyStore._id)
         console.log({ delKey })
