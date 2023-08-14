@@ -7,7 +7,13 @@ const {
     furniture,
 } = require("../models/product.model")
 const { BadRequestError } = require("../core/error.response")
-const { findAllDraftsForShop } = require("../models/repositories/product.repo")
+const {
+    findAllDraftsForShop,
+    findAllPublishedForShop,
+    publishProductByShop,
+    unPublishProductByShop,
+    searchProductByUser,
+} = require("../models/repositories/product.repo")
 
 // deinde Factory class to create products
 
@@ -25,10 +31,32 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
+    //put
+    static async publishProductByShop({ product_shop, product_id }) {
+        return await publishProductByShop({ product_shop, product_id })
+    }
+    static async unPublishProductByShop({ product_shop, product_id }) {
+        return await unPublishProductByShop({ product_shop, product_id })
+    }
+    //end put
+
     //query
     static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
-        const { query } = { product_shop, isDraft: true }
+        const query = { product_shop, isDraft: true }
         return await findAllDraftsForShop({ query, limit, skip })
+    }
+
+    static async findAllPublishedForShop({
+        product_shop,
+        limit = 50,
+        skip = 0,
+    }) {
+        const query = { product_shop, isPublished: true }
+        return await findAllPublishedForShop({ query, limit, skip })
+    }
+
+    static async getListSearchProducts({ keySearch }) {
+        return await searchProductByUser({ keySearch })
     }
 }
 

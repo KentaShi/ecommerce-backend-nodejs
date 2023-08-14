@@ -31,6 +31,26 @@ class ProductController {
         }).send(res)
     }
 
+    publishProductByShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Product published successfully!",
+            metadata: await ProductServiceV2.publishProductByShop({
+                product_id: req.params.id,
+                product_shop: req.user.userId,
+            }),
+        }).send(res)
+    }
+
+    unPublishProductByShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Product unPublished successfully!",
+            metadata: await ProductServiceV2.unPublishProductByShop({
+                product_id: req.params.id,
+                product_shop: req.user.userId,
+            }),
+        }).send(res)
+    }
+
     /**
      * @desc Get all draft for shop
      * @param {Number} limit
@@ -45,6 +65,20 @@ class ProductController {
             metadata: await ProductServiceV2.findAllDraftsForShop({
                 product_shop: req.user.userId,
             }),
+        }).send(res)
+    }
+    getAllPublishedForShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list Published for shop successfully!",
+            metadata: await ProductServiceV2.findAllPublishedForShop({
+                product_shop: req.user.userId,
+            }),
+        }).send(res)
+    }
+    getListSearchProducts = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list Published for shop successfully!",
+            metadata: await ProductServiceV2.getListSearchProducts(req.params),
         }).send(res)
     }
     // end query
