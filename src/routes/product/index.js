@@ -10,10 +10,15 @@ router.get(
     "/search/:keySearch",
     asyncHandler(productController.getListSearchProducts)
 )
+router.get("", asyncHandler(productController.findAllProducts))
+router.get("/:product_id", asyncHandler(productController.findProduct))
+
 //authentication
 router.use(authenticationV2)
 //create product
 router.post("/", asyncHandler(productController.createProduct))
+//update product
+router.patch("/:productId", asyncHandler(productController.updateProduct))
 //publish a product
 router.post(
     "/publish/:id",

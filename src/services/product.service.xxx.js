@@ -13,7 +13,13 @@ const {
     publishProductByShop,
     unPublishProductByShop,
     searchProductByUser,
+    findAllProducts,
+    findProduct,
+    updateProductById,
 } = require("../models/repositories/product.repo")
+
+const { removeUndefinedObject, updateNestedObjectParser } = require("../utils")
+const { insertInventory } = require("../models/repositories/inventory.repo")
 
 // deinde Factory class to create products
 
@@ -29,6 +35,13 @@ class ProductFactory {
         if (!productClass)
             throw new BadRequestError(`Invalid product type ${type}`)
         return new productClass(payload).createProduct()
+    }
+
+    static async updateProduct(type, productId, payload) {
+        const productClass = ProductFactory.productRegistry[type]
+        if (!productClass)
+            throw new BadRequestError(`Invalid product type ${type}`)
+        return new productClass(payload).updateProduct(productId)
     }
 
     //put
@@ -58,6 +71,25 @@ class ProductFactory {
     static async getListSearchProducts({ keySearch }) {
         return await searchProductByUser({ keySearch })
     }
+
+    static async findAllProducts({
+        limit = 50,
+        sort = "ctime",
+        page = 1,
+        filter = { isPublished: true },
+    }) {
+        return await findAllProducts({
+            limit,
+            sort,
+            page,
+            filter,
+            select: ["product_name", "product_price", "product_thumb"],
+        })
+    }
+
+    static async findProduct({ product_id }) {
+        return await findProduct({ product_id, unSelect: ["__v"] })
+    }
 }
 
 class Product {
@@ -81,7 +113,23 @@ class Product {
 
     //create new product
     async createProduct(product_id) {
-        return await product.create({ ...this, _id: product_id })
+        const newProduct = await product.create({ ...this, _id: product_id })
+
+        if (newProduct) {
+            //add product_stock in inventory collection
+            await insertInventory({
+                productId: newProduct._id,
+                shopId: this.product_shop,
+                stock: this.product_quantity,
+            })
+        }
+
+        return newProduct
+    }
+
+    //update product
+    async updateProduct(productId, payload) {
+        return await updateProductById({ productId, payload, model: product })
     }
 }
 
@@ -100,6 +148,29 @@ class Clothing extends Product {
         if (!newProduct) {
             throw new BadRequestError("Create new product (clothing) error")
         }
+        return newProduct
+    }
+
+    async updateProduct(productId) {
+        //1. Remove attr has null, undefined value
+        const objectParams = removeUndefinedObject(this)
+        //2. Determine attributes to update
+        if (objectParams.product_attributes) {
+            //update child
+            await updateProductById({
+                productId,
+                payload: updateNestedObjectParser(
+                    objectParams.product_attributes
+                ),
+                model: clothing,
+            })
+        }
+
+        const updateProduct = await super.updateProduct(
+            productId,
+            updateNestedObjectParser(objectParams)
+        )
+        return updateProduct
     }
 }
 
@@ -118,6 +189,29 @@ class Electronic extends Product {
         if (!newProduct) {
             throw new BadRequestError("Create new product (Electronic) error")
         }
+        return newProduct
+    }
+
+    async updateProduct(productId) {
+        //1. Remove attr has null, undefined value
+        const objectParams = removeUndefinedObject(this)
+        //2. Determine attributes to update
+        if (objectParams.product_attributes) {
+            //update child
+            await updateProductById({
+                productId,
+                payload: updateNestedObjectParser(
+                    objectParams.product_attributes
+                ),
+                model: electronic,
+            })
+        }
+
+        const updateProduct = await super.updateProduct(
+            productId,
+            updateNestedObjectParser(objectParams)
+        )
+        return updateProduct
     }
 }
 
@@ -136,6 +230,29 @@ class Furniture extends Product {
         if (!newProduct) {
             throw new BadRequestError("Create new product (Furniture) error")
         }
+        return newProduct
+    }
+
+    async updateProduct(productId) {
+        //1. Remove attr has null, undefined value
+        const objectParams = removeUndefinedObject(this)
+        //2. Determine attributes to update
+        if (objectParams.product_attributes) {
+            //update child
+            await updateProductById({
+                productId,
+                payload: updateNestedObjectParser(
+                    objectParams.product_attributes
+                ),
+                model: furniture,
+            })
+        }
+
+        const updateProduct = await super.updateProduct(
+            productId,
+            updateNestedObjectParser(objectParams)
+        )
+        return updateProduct
     }
 }
 
