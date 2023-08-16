@@ -10,7 +10,7 @@ var discountSchema = new Schema(
             type: String,
             required: true,
         },
-        discount_desciption: {
+        discount_description: {
             type: String,
             required: true,
         },
@@ -19,6 +19,10 @@ var discountSchema = new Schema(
             default: "fixed_amount", // or "percentage"
         },
         discount_value: {
+            type: Number,
+            required: true,
+        },
+        discount_max_value: {
             type: Number,
             required: true,
         },
@@ -36,17 +40,17 @@ var discountSchema = new Schema(
             type: Date,
             required: true,
         },
-        discount_max_count: {
+        discount_max_uses: {
             // so luong toi da discount duoc ap dung
             type: Number,
             required: true,
         },
-        discount_used_count: {
+        discount_count_of_used: {
             // so luong discount da su dung
             type: Number,
             required: true,
         },
-        discount_users_used: {
+        discount_list_users_used: {
             // ai su dung
             type: Array,
             default: [],
