@@ -43,10 +43,7 @@ class DiscountService {
             product_ids,
         } = payload
 
-        if (
-            new Date() < new Date(start_date) ||
-            new Date() > new Date(end_date)
-        ) {
+        if (new Date() > new Date(end_date)) {
             throw new BadRequestError("Discount code has expired!")
         }
 
@@ -83,6 +80,8 @@ class DiscountService {
             discount_applies_to: applies_to,
             discount_product_ids: applies_to === "all" ? [] : product_ids,
         })
+
+        return newDiscount
     }
 
     static async updateDiscountCode() {}
@@ -121,7 +120,7 @@ class DiscountService {
                 limit: +limit,
                 page: +page,
                 sort: "ctime",
-                select: ["product_name"],
+                select: ["_id", "product_name"],
             })
         }
         if (discount_product_ids === "specific") {
@@ -134,7 +133,7 @@ class DiscountService {
                 limit: +limit,
                 page: +page,
                 sort: "ctime",
-                select: ["product_name"],
+                select: ["_id", "product_name"],
             })
         }
 
@@ -160,7 +159,6 @@ class DiscountService {
 
     static async getDiscountAmount({ code, userId, shopId, products }) {
         const foundDiscount = await checkDiscountExists({
-            model: discount,
             filter: {
                 discount_code: code,
                 discount_shopId: convertToObjectIdMongodb(shopId),
@@ -219,9 +217,9 @@ class DiscountService {
 
         //check discount type la fixed_amount hay percentage
         const amount =
-            discount_type === "fixed_amount"
+            discount_type === "fixed-amount"
                 ? discount_value
-                : totalOrderPrice + discount_value / 100
+                : (totalOrderPrice * discount_value) / 100
 
         return {
             totalOrderPrice,
@@ -242,7 +240,6 @@ class DiscountService {
     //user cancel discount code
     static async cancelDiscountCode({ code, shopId, userId }) {
         const foundDiscount = await checkDiscountExists({
-            model: discount,
             filter: {
                 discount_code: code,
                 discount_shopId: convertToObjectIdMongodb(shopId),

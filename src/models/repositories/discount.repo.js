@@ -1,6 +1,7 @@
 "use strict"
 
 const { getSelectData, getUnSelectData } = require("../../utils")
+const { discount } = require("../discount.model")
 
 const findAllDiscountCodesUnselect = async ({
     limit = 50,
@@ -8,11 +9,10 @@ const findAllDiscountCodesUnselect = async ({
     sort = "ctime",
     filter,
     unSelect,
-    model,
 }) => {
     const skip = (page - 1) * limit
     const sortBy = sort === "ctime" ? { _id: -1 } : { _id: 1 }
-    const documents = await model
+    const documents = await discount
         .find(filter)
         .sort(sortBy)
         .skip(skip)
@@ -32,7 +32,7 @@ const findAllDiscountCodesSelect = async ({
 }) => {
     const skip = (page - 1) * limit
     const sortBy = sort === "ctime" ? { _id: -1 } : { _id: 1 }
-    const documents = await model
+    const documents = await discount
         .find(filter)
         .sort(sortBy)
         .skip(skip)
@@ -43,8 +43,8 @@ const findAllDiscountCodesSelect = async ({
     return documents
 }
 
-const checkDiscountExists = async (model, filter) => {
-    return await model.findOne(filter).lean()
+const checkDiscountExists = async ({ filter }) => {
+    return await discount.findOne(filter).lean()
 }
 
 module.exports = {

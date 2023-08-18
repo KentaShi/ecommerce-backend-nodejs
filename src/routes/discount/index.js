@@ -6,7 +6,7 @@ const { authenticationV2 } = require("../../auth/authUtils")
 const router = require("express").Router()
 
 //get amount of discount
-router.get("/amount", asyncHandler(discountController.getAllDiscountAmount))
+router.post("/amount", asyncHandler(discountController.getAllDiscountAmount))
 router.get(
     "/list_product_of_code",
     asyncHandler(discountController.getAllProductsBelongToDiscountCode)
@@ -16,6 +16,6 @@ router.get(
 router.use(authenticationV2)
 
 router.post("", asyncHandler(discountController.createDiscountCode))
-router.get("", asyncHandler(discountController.getAllDiscountCodes))
+router.get("/", asyncHandler(discountController.getAllDiscountCodes))
 
 module.exports = router
