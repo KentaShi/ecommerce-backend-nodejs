@@ -27,8 +27,8 @@ const cartSchema = new Schema(
         },
     },
     {
-        collation: COLLECTION_NAME,
-        timeseries: {
+        collection: COLLECTION_NAME,
+        timestamps: {
             createdAt: "createdOn",
             updatedAt: "updatedOn",
         },
