@@ -52,6 +52,7 @@ class CheckoutService {
             const { shopId, shop_discounts, item_products } = shop_order_ids[i]
             // check product in server
             const checkProductServer = await checkProductByServer(item_products)
+            //console.log("checkProductServer::" + checkProductServer)
             if (!checkProductServer[0]) {
                 throw new BadRequestError("Order Wrong")
             }
@@ -74,13 +75,32 @@ class CheckoutService {
             //new shop_discounts > 0, check xem co hop le hay khong
             if (shop_discounts.length > 0) {
                 //gia su chi co mot discount
-                const {} = await DiscountService.getDiscountAmount({
-                    code: shop_discounts[0].code,
-                    userId,
-                    shopId,
-                    products: checkProductServer,
-                })
+                const { totalPrice = 0, discountAmount = 0 } =
+                    await DiscountService.getDiscountAmount({
+                        code: shop_discounts[0].code,
+                        userId,
+                        shopId,
+                        products: checkProductServer,
+                    })
+                //console.log(`discount amount:: ${discountAmount}`)
+                //tong cong discount giam gia
+                checkout_order.totalDiscount += discountAmount
+                //new tien giam gia lon hon 0
+                if (discountAmount > 0) {
+                    itemCheckout.priceAppliedDiscount =
+                        checkoutPrice - discountAmount
+                }
             }
+
+            //tong thanh toan
+            checkout_order.totalCheckout += itemCheckout.priceAppliedDiscount
+            shop_order_ids_new.push(itemCheckout)
+        }
+
+        return {
+            shop_order_ids,
+            shop_order_ids_new,
+            checkout_order,
         }
     }
 }
