@@ -21,11 +21,11 @@ const insertInventory = async ({
 const reservationInventory = async ({ productId, quantity, cartId }) => {
     const query = {
             inven_productId: convertToObjectIdMongodb(productId),
-            inven_stock: { $gte: quantity },
+            inven_stock: { $gte: quantity }, //stock >= quantity
         },
         updateSet = {
             $inc: {
-                inven_stock: -quantity,
+                inven_stock: -quantity, // stock = stock - quantity
             },
             $push: {
                 inven_reservations: {

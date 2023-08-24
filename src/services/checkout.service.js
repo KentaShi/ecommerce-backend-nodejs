@@ -1,9 +1,11 @@
 "use strict"
 
 const { BadRequestError } = require("../core/error.response")
+const { order } = require("../models/order.model")
 const { findCartById } = require("../models/repositories/cart.repo")
 const { checkProductByServer } = require("../models/repositories/product.repo")
 const DiscountService = require("./discount.service")
+const { acquireLock, releaseLock } = require("./redis.service")
 
 class CheckoutService {
     /* payload 
@@ -123,10 +125,58 @@ class CheckoutService {
             (order) => order.item_products
         )
         console.log(`[1]::`, products)
+        const acquireProducts = []
         for (let i = 0; i < products.length; i++) {
             const { productId, quantity } = products[i]
+            const keyLock = await acquireLock(productId, quantity, cartId)
+            acquireProducts.push(keyLock ? true : false)
+            if (keyLock) {
+                await releaseLock(keyLock)
+            }
         }
+        // check neu co mot san pham het hang trong kho
+        if (acquireProducts.includes(false)) {
+            throw new BadRequestError(
+                "Product was updated, please come back your cart!"
+            )
+        }
+        const newOrder = await order.create({
+            order_userId: userId,
+            order_checkout: checkout_order,
+            order_shipping: user_address,
+            order_payment: user_payment,
+            order_products: shop_order_ids_new,
+        })
+
+        if (newOrder) {
+            //xoa product trong cart
+        }
+        return newOrder
     }
+
+    /*
+        1. get orders by users
+    */
+
+    static async getOrdersByUser() {}
+
+    /*
+        2. get order by userId
+    */
+
+    static async getOrderByUserId() {}
+
+    /*
+        3. cancel order by users
+    */
+
+    static async cancelOrdersByUser() {}
+
+    /*
+        4. update order status by shop | admin
+    */
+
+    static async updateOrderStatusByShop() {}
 }
 
 module.exports = CheckoutService
