@@ -11,12 +11,12 @@ const apikey = async (req, res, next) => {
     try {
         const key = req.headers[HEADER.API_KEY].toString()
         if (!key) {
-            return res.status(403).json({ message: "Forbidden Error" })
+            return res.status(403).json({ message: "Forbidden Error!" })
         }
         //check obj Key
         const objKey = await findById(key)
         if (!objKey) {
-            return res.status(403).json({ message: "Forbidden Error" })
+            return res.status(403).json({ message: "Forbidden Error!!" })
         }
         req.objKey = objKey
         return next()

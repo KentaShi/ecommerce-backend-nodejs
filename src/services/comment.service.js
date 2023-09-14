@@ -1,5 +1,6 @@
 "use strict"
 
+const { NotFoundError } = require("../core/error.response")
 const Comment = require("../models/comment.model")
 const { convertToObjectIdMongodb } = require("../utils")
 
@@ -26,6 +27,22 @@ class CommentService {
         let rightValue
         if (parentCommentId) {
             //reply comment
+            const parentComment = await Comment.findById(parentCommentId)
+            if (!parentComment) {
+                throw new NotFoundError("Parent comment not found")
+            }
+            rightValue = parentComment.comment_right
+
+            //update many comments
+            await Comment.updateMany(
+                {
+                    comment_productId: convertToObjectIdMongodb(productId),
+                    comment_left: { $gt: rightValue },
+                },
+                {
+                    $inc: { comment_left: 2 },
+                }
+            )
         } else {
             const maxRightValue = await Comment.findOne(
                 {

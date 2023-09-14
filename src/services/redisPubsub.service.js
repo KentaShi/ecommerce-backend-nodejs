@@ -4,6 +4,8 @@ class RedisPubSubService {
     constructor() {
         this.subcriber = Redis.createClient()
         this.publisher = Redis.createClient()
+        this.subcriber.connect()
+        this.publisher.connect()
     }
 
     // publish(channel, message) {
@@ -28,12 +30,10 @@ class RedisPubSubService {
     // }
 
     async publish(channel, message) {
-        await this.publisher.connect()
         this.publisher.publish(channel, message)
     }
 
     async subcribe(channel, callback) {
-        await this.subcriber.connect()
         this.subcriber.subscribe(channel, (message) => callback(message))
     }
 }

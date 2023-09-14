@@ -2,6 +2,11 @@ const { apikey, checkPermission } = require("../auth/checkAuth")
 
 const router = require("express").Router()
 
+const { pushToLogDiscord } = require("../middlewares")
+
+//add log to discord
+router.use(pushToLogDiscord)
+
 //check api key
 router.use(apikey)
 //check permission

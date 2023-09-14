@@ -1,6 +1,7 @@
 const express = require("express")
 const morgan = require("morgan")
 const helmet = require("helmet")
+const dotenv = require("dotenv")
 const compression = require("compression")
 const app = express()
 require("dotenv").config()
@@ -16,9 +17,9 @@ require("./db/init.mongodb")
 const { checkOverload } = require("./helpers/check.connect")
 
 //test pubsub redis
-require("./tests/inventory.test")
-const productTest = require("./tests/product.test")
-productTest.purchaseProduct("product:001", 10)
+// require("./tests/inventory.test")
+// const productTest = require("./tests/product.test")
+// productTest.purchaseProduct("product:001", 10)
 
 //checkOverload()
 
