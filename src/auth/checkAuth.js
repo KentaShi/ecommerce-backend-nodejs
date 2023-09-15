@@ -15,6 +15,7 @@ const apikey = async (req, res, next) => {
         }
         //check obj Key
         const objKey = await findById(key)
+        console.log(`objKey: ${objKey}`)
         if (!objKey) {
             return res.status(403).json({ message: "Forbidden Error!!" })
         }
