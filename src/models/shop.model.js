@@ -18,6 +18,10 @@ var shopSchema = new Schema(
             trim: true,
             unique: true,
         },
+        phone: {
+            type: String,
+            required: true,
+        },
         status: {
             type: String,
             enum: ["active", "inactive"],

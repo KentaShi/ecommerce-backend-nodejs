@@ -11,13 +11,6 @@ const { checkOverload } = require("./helpers/check.connect")
 require("dotenv").config()
 
 // init middlewares
-
-const corsOptions = {
-    origin: "http://localhost:3000", // Replace with your Next.js app's URL
-    methods: "*",
-    allowedHeaders: "*",
-}
-app.use(cors(corsOptions))
 app.use(morgan("dev"))
 app.use(helmet())
 //app.use(bodyParser.json())

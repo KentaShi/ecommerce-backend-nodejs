@@ -14,8 +14,8 @@ require("dotenv").config()
 
 const corsOptions = {
     origin: "http://localhost:3000", // Replace with your Next.js app's URL
-    methods: "*",
-    allowedHeaders: "*",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
 }
 app.use(cors(corsOptions))
 app.use(morgan("dev"))

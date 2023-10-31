@@ -161,7 +161,7 @@ class AccessService {
         }
     }
 
-    static signUp = async ({ name, email, password }) => {
+    static signUp = async ({ name, email, phone, password }) => {
         // check email exists
         const holderShop = await shopModel.findOne({ email }).lean()
         if (holderShop) {
@@ -171,6 +171,7 @@ class AccessService {
         const newShop = await shopModel.create({
             name,
             email,
+            phone,
             password: passwordHash,
             roles: [RoleShop.SHOP],
         })
@@ -219,7 +220,7 @@ class AccessService {
                 code: 201,
                 metadata: {
                     shop: getInfoData({
-                        fields: ["_id", "email", "name"],
+                        fields: ["_id", "email", "name", "phone"],
                         object: newShop,
                     }),
                     tokens,
@@ -230,6 +231,32 @@ class AccessService {
             code: 200,
             metadata: null,
         }
+    }
+
+    //retry delay
+    // if error: every 3s retry fetch data
+    // static fetchWithRetry = async (url = "") => {
+    //     const response = await fetch(url)
+    //     if (response.status < 200 || response.status >= 300) {
+    //         setTimeout(async () => {
+    //             await this.fetchWithRetry(url)
+    //         }, 3000)
+    //     }
+    //     return response
+    // }
+
+    //advanced
+    static fetchWithRetry = async (url = "", errorCount = 0) => {
+        const MAX_ERROR_COUNT = 3
+        const response = await fetch(url)
+        if (response.status < 200 || response.status >= 300) {
+            if (errorCount <= MAX_ERROR_COUNT) {
+                setTimeout(async () => {
+                    await this.fetchWithRetry(url, errorCount + 1)
+                }, Math.pow(2, errorCount) * 3000 + Math.random() * 1000) // Avoid high requests traffic at the same time
+            }
+        }
+        return response
     }
 }
 

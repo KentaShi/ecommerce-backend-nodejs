@@ -2,7 +2,6 @@ const express = require("express")
 const morgan = require("morgan")
 const helmet = require("helmet")
 const dotenv = require("dotenv")
-const cors = require("cors")
 const bodyParser = require("body-parser")
 const compression = require("compression")
 const app = express()
@@ -11,13 +10,6 @@ const { checkOverload } = require("./helpers/check.connect")
 require("dotenv").config()
 
 // init middlewares
-
-const corsOptions = {
-    origin: "http://localhost:3000", // Replace with your Next.js app's URL
-    methods: "*",
-    allowedHeaders: "*",
-}
-app.use(cors(corsOptions))
 app.use(morgan("dev"))
 app.use(helmet())
 //app.use(bodyParser.json())

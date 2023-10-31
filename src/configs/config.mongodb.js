@@ -15,7 +15,7 @@
 // development
 const dev = {
     app: {
-        port: process.env.DEV_APP_PORT || 3000,
+        port: process.env.DEV_APP_PORT || 3001,
     },
     db: {
         host: process.env.DEV_DB_HOST || "localhost",
@@ -26,7 +26,7 @@ const dev = {
 // production
 const product = {
     app: {
-        port: process.env.PRODUCT_APP_PORT || 3000,
+        port: process.env.PRODUCT_APP_PORT || 3001,
     },
     db: {
         host: process.env.PRODUCT_DB_HOST || "localhost",
